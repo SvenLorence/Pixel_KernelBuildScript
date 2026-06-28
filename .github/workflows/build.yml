@@ -1,0 +1,39 @@
+name: Build Kernel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        firmware: [stable, beta]
+        ksu_type: [ksu, ksun, sukisu]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y p7zip-full zip git curl wget
+
+      - name: First Install
+        run: ./first_install.sh
+
+      - name: Build Kernel
+        run: ./build_ksu.sh --${{ matrix.firmware }} --${{ matrix.ksu_type }}
+        env:
+          ARCHIVE: ${{ secrets.ARCHIVE }}
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: boot_${{ matrix.firmware }}_${{ matrix.ksu_type }}
+          path: output/*
+          retention-days: 1
+          archive: true
