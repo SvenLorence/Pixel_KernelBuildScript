@@ -232,9 +232,12 @@ sed -i '/^config LSM$/,/^help$/{ /^[[:space:]]*default/ { /baseband_guard/! s/se
 # ==============================================================================
 
 log "Correction of the .sh script used for build"
-sed -i '/zuma_shusky_dist/q' "$KERNEL/build_shusky.sh"
-sed -i 's/zuma_shusky_dist/kernel/' "$KERNEL/build_shusky.sh"
-sed -i 's/bazel run/bazel build/' "$KERNEL/build_shusky.sh"
+# Удаляем этап подписи .ko модулей, так как собирается только raw image
+sed -i --follow-symlinks '/sign_file=$(mktemp)/,$d' ${KERNEL}/tools/build_dist.sh
+# Меняем цель Bazel с пакета дистрибутива на ядро
+sed -i --follow-symlinks 's/${DEVICE}\/dist/kernel/' ${KERNEL}/tools/build_dist.sh
+
+sed -i --follow-symlinks 's/bazel" run/bazel" build/' ${KERNEL}/tools/build_dist.sh
 
 log "Build kernel"
 cd "$KERNEL"
