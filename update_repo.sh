@@ -171,7 +171,7 @@ clean_workspace() {
   for path in "$STABLE_PATH" "$BETA_PATH"; do
     clean_repo "$PROJECT_ROOT/$path"
     debug "remove overlay dirs from $path"
-    rm -rf "$PROJECT_ROOT/$path/Baseband-guard" "$PROJECT_ROOT/$path/KernelSU-Next" 2>/dev/null || true
+    rm -rf "$PROJECT_ROOT/$path/Baseband-guard" "$PROJECT_ROOT/$path/KernelSU" "$PROJECT_ROOT/$path/KernelSU-Next" 2>/dev/null || true
   done
 
   clean_repo "$KERNEL_PATH"
